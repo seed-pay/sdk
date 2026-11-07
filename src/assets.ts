@@ -1,25 +1,19 @@
-export enum Network {
-  bitcoin = 'bitcoin',
-  ethereum = 'ethereum',
-  arbitrum = 'arbitrum',
-  solana = 'solana',
-  tron = 'tron',
-}
+import type { Asset, AssetMeta, NetworkType } from './types'
 
-export type Asset = keyof typeof ASSET_META
-
-export type AssetMeta = {
-  network: Network
-  name: string
-  symbol: string
-  decimals: number
-}
-
+type IAsset = keyof typeof ASSET_META
 type AssetRegistry = {
-  [K in `${Network}.${string}`]?: Omit<AssetMeta, 'network'> & {
+  [K in `${NetworkType}.${string}`]?: Omit<AssetMeta, 'network'> & {
     network: K extends `${infer N}.${string}` ? N : never
   }
 }
+
+export const Network = {
+  bitcoin: 'bitcoin',
+  ethereum: 'ethereum',
+  arbitrum: 'arbitrum',
+  solana: 'solana',
+  tron: 'tron',
+} as const
 
 export const ASSET_META = {
   'bitcoin.btc': {
@@ -78,7 +72,7 @@ export const ASSET_META = {
   },
 } as const satisfies AssetRegistry
 
-export const ASSETS: readonly Asset[] = Object.keys(ASSET_META) as Asset[]
+export const ASSETS = Object.keys(ASSET_META) as readonly IAsset[]
 
 export const ASSET_REFERENCE = {
   'bitcoin.btc': 'bitcoin.btc',
@@ -90,4 +84,4 @@ export const ASSET_REFERENCE = {
   'solana.usdt': 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
   'tron.trx': 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb',
   'tron.usdt': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-} as const satisfies Record<Asset, string>
+} as const satisfies Readonly<Record<Asset, string>>

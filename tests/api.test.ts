@@ -11,11 +11,12 @@ import fetchMock from 'fetch-mock'
 import { createIntent, DepositStatus, ErrorCode, Seedpay } from '../src'
 
 import type {
+  Asset,
+  AssetInfo,
   Deposit,
   DepositParams,
   Intent,
   IntentParams,
-  Price,
   Quote,
 } from '../src'
 
@@ -46,7 +47,7 @@ const deposit: Deposit = {
   status: DepositStatus.WAITING,
 } as const
 
-const prices: Price[] = [{ asset: 'arbitrum.usdc', usd: 1 }] as const
+const prices: AssetInfo[] = [{ asset: 'arbitrum.usdc', usd: 1 }] as const
 
 beforeAll(() => fetchMock.mockGlobal())
 afterAll(() => fetchMock.unmockGlobal())
@@ -63,10 +64,16 @@ describe('Api', () => {
     expect(await api.createIntent(params)).toEqual(intent)
   })
 
+  test('Get assets', async () => {
+    fetchMock.get(`${baseURL}/assets`, { data: prices })
+
+    expect(await api.getAssets()).toEqual(prices)
+  })
+
   test('Get quote', async () => {
     fetchMock.post(`${baseURL}/quotes`, { data: quote })
 
-    expect(await api.getQuote(intent)).toEqual(quote)
+    expect(await api.createQuote(intent)).toEqual(quote)
   })
 
   test('Create deposit', async () => {
@@ -89,12 +96,6 @@ describe('Api', () => {
     expect(api.getDeposit('ref')).rejects.toThrow()
   })
 
-  test('Get prices', async () => {
-    fetchMock.get(`${baseURL}/prices`, { data: prices })
-
-    expect(await api.getPrices()).toEqual(prices)
-  })
-
   test('Validate intent params', () => {
     const call = () => api.createIntent({ ...params, amount: 'invalid' })
 
@@ -102,14 +103,14 @@ describe('Api', () => {
   })
 
   test('Validate quote params', () => {
-    const call = () => api.getQuote({ ...intent, recipient: 'invalid' })
+    const call = () => api.createQuote({ ...intent, recipient: 'invalid' })
 
     expect(call).toThrow(ErrorCode.INVALID_RECIPIENT)
   })
 
   test('Validate deposit params', () => {
     const call = () =>
-      api.createDeposit({ ...depositParams, originAsset: 'invalid' })
+      api.createDeposit({ ...depositParams, originAsset: 'invalid' as Asset })
 
     expect(call).toThrow(ErrorCode.INVALID_ASSET)
   })

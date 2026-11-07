@@ -6,7 +6,7 @@ import { parseUnits } from 'micro-eth-signer/utils.js'
 import { parse, stringify, v7 } from 'uuid'
 
 import { ASSET_META, ASSET_REFERENCE } from './assets'
-import { intentParamsSchema, intentSchema } from './schemas'
+import { intentParamsSchema, intentSchema } from './types'
 
 import type { Intent, IntentParams } from './types'
 

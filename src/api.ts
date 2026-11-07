@@ -7,7 +7,7 @@ import {
   intentParamsSchema,
   intentSchema,
   type AssetInfo,
-} from './schemas'
+} from './types'
 
 import type {
   ApiResponse,
