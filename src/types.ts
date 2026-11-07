@@ -1,139 +1,41 @@
-import * as v from 'valibot'
+import type { Asset } from './assets'
 
-import { ASSET_LIST, ASSETS, DESTINATION_ASSETS } from './assets'
+export type ApiResponse<T> = { data: T }
 
-// --- primitives ---
+export type IntentParams = Omit<Intent, 'id'>
 
-export const asset = v.picklist(ASSET_LIST, 'Asset is not supported')
-export const destAssetId = v.picklist(DESTINATION_ASSETS, 'Asset is not supported')
-export const paymentStatus = v.picklist(['INSUFFICIENT', 'EXACT', 'EXCESS'])
-export const depositStatus = v.picklist([
-  'WAITING',
-  'RECEIVING',
-  'SWAPPING',
-  'SENDING',
-  'SENT',
-  'COMPLETED',
-  'EXPIRED',
-  'FAILED',
-])
+export type Intent = {
+  id: string
+  asset: Asset
+  amount: string
+  recipient: string
+  affiliate?: string
+}
 
-export const uint = v.pipe(v.string(), v.regex(/^(0|[1-9]\d*)$/, 'Must be an unsigned integer'))
-export const amount = v.pipe(v.string(), v.regex(/^(0|[1-9]\d*)(\.\d+)?$/, 'Must be a numeric amount'))
+export type QuoteParams = Intent
 
-export const id = v.pipe(
-  v.string(),
-  v.regex(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/, 'Invalid id')
-)
+export type Quote = { intent: Intent; amount: string; time: number }
 
-// --- schemas ---
+export enum DepositStatus {
+  WAITING = 'WAITING',
+  EXPIRED = 'EXPIRED',
+  PROCESSING = 'PROCESSING',
+  SUCCESS = 'SUCCESS',
+  REFUNDED = 'REFUNDED',
+  FAILED = 'FAILED',
+}
 
-export const quoteParams = v.object({
-  srcAsset: asset,
-  destAsset: destAssetId,
-  amount: uint,
-})
+export type DepositParams = {
+  intent: Intent
+  refundRecipient: string
+  originAsset: string
+}
 
-export const quote = v.object({
-  srcAsset: asset,
-  srcAmount: uint,
-  destAsset: destAssetId,
-  destAmount: uint,
-  slippage: uint,
-  minPriceX128: uint,
-  quote: v.any(),
-})
-
-export const intentParams = v.object({
-  asset: destAssetId,
-  recipient: v.string(),
-  affiliate: v.optional(v.string()),
-  amount,
-})
-
-export const intent = v.object({
-  id,
-  asset: destAssetId,
-  recipient: v.string(),
-  affiliate: v.optional(v.string()),
-  amount,
-})
-
-export const settlement = v.object({
-  id,
-  contract: v.string(),
-  token: v.string(),
-  recipient: v.string(),
-  affiliate: v.nullable(v.string()),
-  chainId: v.number(),
-  srcChainId: v.number(),
-  srcAddress: v.nullable(v.string()),
-  intentAmount: v.string(),
-  protocolAmount: v.string(),
-  affiliateAmount: v.string(),
-  recipientAmount: v.string(),
-  transactionHash: v.string(),
-  blockHash: v.string(),
-  blockNumber: v.string(),
-  logIndex: v.number(),
-  timestamp: v.string(),
-  status: v.number(),
-})
-
-export const payment = v.intersect([
-  intent,
-  v.object({
-    totalAmount: amount,
-    status: paymentStatus,
-    settlements: v.array(settlement),
-  }),
-])
-
-export const depositParams = v.object({
-  refundAddress: v.string(),
-  intent,
-  quote,
-})
-
-export const depositRef = v.string()
-
-export const deposit = v.object({
-  ref: v.string(),
-  srcAsset: asset,
-  srcAmount: uint,
-  depositAddress: v.string(),
-  depositAmount: v.optional(v.string()),
-  depositTx: v.optional(v.string()),
-  destTx: v.optional(v.string()),
-  refundAddress: v.string(),
-  refundAmount: v.optional(v.string()),
-  refundTx: v.optional(v.string()),
-  status: depositStatus,
-  completedAt: v.optional(v.number()),
-  expireAt: v.number(),
-  intent,
-})
-
-// --- types ---
-
-export type Uint = v.InferOutput<typeof uint>
-
-export type AssetId = keyof typeof ASSETS
-export type Asset = (typeof ASSETS)[AssetId]
-export type DestAsset = (typeof DESTINATION_ASSETS)[number]
-export type AssetStandard = Asset['standard']
-export type Chain = Asset['chain']
-export type Symbol = Asset['symbol']
-
-export type QuoteParams = v.InferOutput<typeof quoteParams>
-export type Quote = v.InferOutput<typeof quote>
-
-export type DepositParams = v.InferOutput<typeof depositParams>
-export type DepositStatus = v.InferOutput<typeof depositStatus>
-export type Deposit = v.InferOutput<typeof deposit>
-
-export type IntentParams = v.InferOutput<typeof intentParams>
-export type Intent = v.InferOutput<typeof intent>
-export type Settlement = v.InferOutput<typeof settlement>
-export type Payment = v.InferOutput<typeof payment>
-export type PaymentStatus = v.InferOutput<typeof paymentStatus>
+export type Deposit = DepositParams & {
+  originAmount?: string
+  originReference?: string
+  destination: string
+  amount: string
+  deadline: string
+  status: DepositStatus
+}

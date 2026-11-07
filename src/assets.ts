@@ -1,147 +1,93 @@
-import { ethAddress } from 'viem'
-
-import { keys } from './utils'
-
-export enum ChainEnum {
-  BTC = 1,
-  ETH = 2,
-  ARB = 3,
-  SOL = 4,
-  TRX = 5,
-  DOT = 6,
+export enum Network {
+  bitcoin = 'bitcoin',
+  ethereum = 'ethereum',
+  arbitrum = 'arbitrum',
+  solana = 'solana',
+  tron = 'tron',
 }
 
-export const ASSETS = {
-  'BTC.BTC': {
-    chain: ChainEnum.BTC,
-    decimals: 8,
-    symbol: 'BTC',
+export type Asset = keyof typeof ASSET_META
+
+export type AssetMeta = {
+  network: Network
+  name: string
+  symbol: string
+  decimals: number
+}
+
+type AssetRegistry = {
+  [K in `${Network}.${string}`]?: Omit<AssetMeta, 'network'> & {
+    network: K extends `${infer N}.${string}` ? N : never
+  }
+}
+
+export const ASSET_META = {
+  'bitcoin.btc': {
+    network: Network.bitcoin,
     name: 'Bitcoin',
-    address: ethAddress,
-    standard: 'native',
-  },
-  'TRX.USDT': {
-    chain: ChainEnum.TRX,
-    decimals: 6,
-    symbol: 'USDT',
-    name: 'Tether',
-    address: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-    standard: 'trc20',
-  },
-  'ETH.USDT': {
-    chain: ChainEnum.ETH,
-    decimals: 6,
-    symbol: 'USDT',
-    name: 'Tether',
-    address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    standard: 'erc20',
-  },
-  'ETH.USDC': {
-    chain: ChainEnum.ETH,
-    decimals: 6,
-    symbol: 'USDC',
-    name: 'USD Coin',
-    address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    standard: 'erc20',
-  },
-  'ETH.ETH': {
-    chain: ChainEnum.ETH,
-    decimals: 18,
-    symbol: 'ETH',
-    name: 'Ethereum',
-    address: ethAddress,
-    standard: 'native',
-  },
-  'ETH.WBTC': {
-    chain: ChainEnum.ETH,
+    symbol: 'BTC',
     decimals: 8,
-    symbol: 'WBTC',
-    name: 'Wrapped Bitcoin',
-    address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-    standard: 'erc20',
   },
-  'SOL.USDT': {
-    chain: ChainEnum.SOL,
-    decimals: 6,
-    symbol: 'USDT',
-    name: 'Tether',
-    address: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-    standard: 'spl',
-  },
-  'SOL.USDC': {
-    chain: ChainEnum.SOL,
-    decimals: 6,
-    symbol: 'USDC',
-    name: 'USD Coin',
-    address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-    standard: 'spl',
-  },
-  'TRX.TRX': {
-    chain: ChainEnum.TRX,
-    decimals: 6,
-    symbol: 'TRX',
-    name: 'Tron',
-    address: ethAddress,
-    standard: 'native',
-  },
-  'SOL.SOL': {
-    chain: ChainEnum.SOL,
-    decimals: 9,
-    symbol: 'SOL',
-    name: 'Solana',
-    address: ethAddress,
-    standard: 'native',
-  },
-  'ARB.USDT': {
-    chain: ChainEnum.ARB,
-    decimals: 6,
-    symbol: 'USDT',
-    name: 'Tether',
-    address: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
-    standard: 'erc20',
-  },
-  'ARB.USDC': {
-    chain: ChainEnum.ARB,
-    decimals: 6,
-    symbol: 'USDC',
-    name: 'USD Coin',
-    address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-    standard: 'erc20',
-  },
-  'ARB.ETH': {
-    chain: ChainEnum.ARB,
-    decimals: 18,
-    symbol: 'ETH',
+  'ethereum.eth': {
+    network: Network.ethereum,
     name: 'Ethereum',
-    address: ethAddress,
-    standard: 'native',
+    symbol: 'ETH',
+    decimals: 18,
   },
-  'DOT.USDT': {
-    chain: ChainEnum.DOT,
-    decimals: 6,
-    symbol: 'USDT',
-    name: 'Tether',
-    address: '1984',
-    standard: 'pallet-asset',
-  },
-  'DOT.USDC': {
-    chain: ChainEnum.DOT,
-    decimals: 6,
-    symbol: 'USDC',
+  'ethereum.usdc': {
+    network: Network.ethereum,
     name: 'USD Coin',
-    address: '1337',
-    standard: 'pallet-asset',
+    symbol: 'USDC',
+    decimals: 6,
   },
-  'DOT.DOT': {
-    chain: ChainEnum.DOT,
-    decimals: 10,
-    symbol: 'DOT',
-    name: 'Polkadot',
-    address: ethAddress,
-    standard: 'native',
+  'arbitrum.eth': {
+    network: Network.arbitrum,
+    name: 'Ethereum',
+    symbol: 'ETH',
+    decimals: 18,
   },
-} as const
+  'arbitrum.usdc': {
+    network: Network.arbitrum,
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 6,
+  },
+  'solana.sol': {
+    network: Network.solana,
+    name: 'Solana',
+    symbol: 'SOL',
+    decimals: 9,
+  },
+  'solana.usdt': {
+    network: Network.solana,
+    name: 'Tether USD',
+    symbol: 'USDT',
+    decimals: 6,
+  },
+  'tron.trx': {
+    network: Network.tron,
+    name: 'TRON',
+    symbol: 'TRX',
+    decimals: 6,
+  },
+  'tron.usdt': {
+    network: Network.tron,
+    name: 'Tether USD',
+    symbol: 'USDT',
+    decimals: 6,
+  },
+} as const satisfies AssetRegistry
 
-export const DESTINATION_ASSETS = ['ARB.USDC', 'ARB.USDT', 'ARB.ETH'] as const
+export const ASSETS: readonly Asset[] = Object.keys(ASSET_META) as Asset[]
 
-export const ASSET_LIST = keys(ASSETS)
+export const ASSET_REFERENCE = {
+  'bitcoin.btc': 'bitcoin.btc',
+  'ethereum.eth': '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+  'ethereum.usdc': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  'arbitrum.eth': '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+  'arbitrum.usdc': '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  'solana.sol': '11111111111111111111111111111111',
+  'solana.usdt': 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+  'tron.trx': 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb',
+  'tron.usdt': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+} as const satisfies Record<Asset, string>
