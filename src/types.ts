@@ -156,3 +156,5 @@ export type Quote = v.InferOutput<typeof quoteSchema>
 export type DepositStatus = v.InferOutput<typeof depositStatusSchema>
 export type DepositParams = v.InferOutput<typeof depositParamsSchema>
 export type Deposit = v.InferOutput<typeof depositSchema>
+
+export type ApiResponse<T> = { data: T }

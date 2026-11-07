@@ -72,6 +72,8 @@ export const ASSET_META = {
   },
 } as const satisfies AssetRegistry
 
+export const NETWORKS = Object.keys(Network) as readonly NetworkType[]
+
 export const ASSETS = Object.keys(ASSET_META) as readonly IAsset[]
 
 export const ASSET_REFERENCE = {

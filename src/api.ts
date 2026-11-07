@@ -2,15 +2,11 @@ import { ofetch, type FetchOptions } from 'ofetch'
 import * as v from 'valibot'
 
 import { API_BASE_URL } from './constants'
-import {
-  depositParamsSchema,
-  intentParamsSchema,
-  intentSchema,
-  type AssetInfo,
-} from './types'
+import { depositParamsSchema, intentParamsSchema, intentSchema } from './types'
 
 import type {
   ApiResponse,
+  AssetInfo,
   Deposit,
   DepositParams,
   Intent,
