@@ -43,12 +43,15 @@ export const affiliateSchema = v.pipe(
 
 // intent
 
-const intentParamsObject = v.object({
-  asset: assetSchema,
-  amount: amountSchema,
-  recipient: recipientSchema,
-  affiliate: v.optional(affiliateSchema),
-})
+const intentParamsObject = v.object(
+  {
+    asset: assetSchema,
+    amount: amountSchema,
+    recipient: recipientSchema,
+    affiliate: v.optional(affiliateSchema),
+  },
+  ErrorCode.INVALID_PARAMS
+)
 
 type IntentObject = v.InferOutput<typeof intentParamsObject>
 
@@ -70,7 +73,10 @@ export const intentParamsSchema = v.pipe(
 )
 
 export const intentSchema = v.pipe(
-  v.object({ id: uuidSchema, ...intentParamsObject.entries }),
+  v.object(
+    { id: uuidSchema, ...intentParamsObject.entries },
+    ErrorCode.INVALID_PARAMS
+  ),
   v.forward(
     v.check((input) => isValidRecipient(input), ErrorCode.INVALID_RECIPIENT),
     ['recipient']
@@ -84,10 +90,10 @@ export const intentSchema = v.pipe(
 // quote
 
 export const quoteParamsSchema = v.pipe(
-  v.object({
-    intent: intentSchema,
-    originAsset: assetSchema,
-  }),
+  v.object(
+    { intent: intentSchema, originAsset: assetSchema },
+    ErrorCode.INVALID_PARAMS
+  ),
   v.forward(
     v.check(({ intent }) => isIntent(intent), ErrorCode.INVALID_INTENT),
     ['intent']
@@ -117,11 +123,14 @@ export const DepositStatus = {
 export const depositStatusSchema = v.enum(DepositStatus)
 
 export const depositParamsSchema = v.pipe(
-  v.object({
-    intent: intentSchema,
-    originAsset: assetSchema,
-    refundRecipient: recipientSchema,
-  }),
+  v.object(
+    {
+      intent: intentSchema,
+      originAsset: assetSchema,
+      refundRecipient: recipientSchema,
+    },
+    ErrorCode.INVALID_PARAMS
+  ),
   v.forward(
     v.check(({ intent }) => isIntent(intent), ErrorCode.INVALID_INTENT),
     ['intent']
