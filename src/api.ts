@@ -2,7 +2,11 @@ import { ofetch, type FetchOptions } from 'ofetch'
 import * as v from 'valibot'
 
 import { API_BASE_URL } from './constants'
-import { depositParamsSchema, intentParamsSchema, intentSchema } from './types'
+import {
+  depositParamsSchema,
+  intentParamsSchema,
+  quoteParamsSchema,
+} from './types'
 
 import type {
   ApiResponse,
@@ -30,7 +34,7 @@ export const Seedpay = (baseURL: string = API_BASE_URL) => {
     },
 
     createQuote: (params: QuoteParams) => {
-      v.parse(intentSchema, params)
+      v.parse(quoteParamsSchema, params)
       return request<Quote>('/quotes', { method: 'POST', body: params })
     },
 

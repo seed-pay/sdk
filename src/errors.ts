@@ -5,6 +5,7 @@ export const ErrorCode = {
   INVALID_RECIPIENT: 'INVALID_RECIPIENT',
   INVALID_AFFILIATE: 'INVALID_AFFILIATE',
   INVALID_INTENT: 'INVALID_INTENT',
+  PROVIDER_ERROR: 'PROVIDER_ERROR',
 } as const
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode]

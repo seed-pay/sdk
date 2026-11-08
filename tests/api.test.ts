@@ -18,6 +18,7 @@ import type {
   Intent,
   IntentParams,
   Quote,
+  QuoteParams,
 } from '../src'
 
 const baseURL = 'https://example.com'
@@ -37,7 +38,17 @@ const depositParams: DepositParams = {
   intent,
 } as const
 
-const quote: Quote = { intent, amount: '0.2', time: 30 }
+const quoteParams: QuoteParams = {
+  originAsset: 'ethereum.eth',
+  intent,
+}
+
+const quote: Quote = {
+  originAsset: 'ethereum.eth',
+  amount: '0.2',
+  time: 30,
+  intent,
+}
 
 const deposit: Deposit = {
   ...depositParams,
@@ -73,7 +84,7 @@ describe('Api', () => {
   test('Get quote', async () => {
     fetchMock.post(`${baseURL}/quotes`, { data: quote })
 
-    expect(await api.createQuote(intent)).toEqual(quote)
+    expect(await api.createQuote(quoteParams)).toEqual(quote)
   })
 
   test('Create deposit', async () => {
@@ -103,9 +114,10 @@ describe('Api', () => {
   })
 
   test('Validate quote params', () => {
-    const call = () => api.createQuote({ ...intent, recipient: 'invalid' })
+    const invalid = { ...intent, amount: '90' }
+    const call = () => api.createQuote({ ...quoteParams, intent: invalid })
 
-    expect(call).toThrow(ErrorCode.INVALID_RECIPIENT)
+    expect(call).toThrow(ErrorCode.INVALID_INTENT)
   })
 
   test('Validate deposit params', () => {

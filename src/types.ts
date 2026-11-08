@@ -83,13 +83,25 @@ export const intentSchema = v.pipe(
 
 // quote
 
-export const quoteParamsSchema = intentSchema
+export const quoteParamsSchema = v.pipe(
+  v.object({
+    intent: intentSchema,
+    originAsset: assetSchema,
+  }),
+  v.forward(
+    v.check(({ intent }) => isIntent(intent), ErrorCode.INVALID_INTENT),
+    ['intent']
+  )
+)
 
-export const quoteSchema = v.object({
-  intent: intentSchema,
-  amount: amountSchema,
-  time: v.number(),
-})
+export const quoteSchema = v.pipe(
+  v.object({
+    intent: intentSchema,
+    originAsset: assetSchema,
+    amount: amountSchema,
+    time: v.number(),
+  })
+)
 
 // deposit
 
