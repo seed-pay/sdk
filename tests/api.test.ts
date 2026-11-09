@@ -40,6 +40,7 @@ const quoteParams: QuoteParams = {
 
 const quote: Quote = {
   intent,
+  provider: 'near',
   originAsset: 'ethereum.eth',
   originAmount: '0.2',
   estimatedTime: 30,
@@ -57,12 +58,15 @@ const depositRef: DepositRef = {
 
 const deposit: Deposit = {
   ...depositParams,
+  provider: 'near',
   refundAmount: null,
   originAmount: '0.2',
   originReference: null,
   depositDetails: params.recipient,
   depositedAmount: '0.2',
+  createdAt: '2026-11-08T15:25:00.000Z',
   deadlineAt: '2026-11-08T15:25:00.000Z',
+  signature: 'signature',
   status: DepositStatus.waiting,
 } as const
 

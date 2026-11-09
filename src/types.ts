@@ -119,6 +119,7 @@ export const quoteParamsSchema = v.pipe(
 export const quoteSchema = v.pipe(
   v.object({
     intent: intentSchema,
+    provider: providerShema,
     originAsset: assetSchema,
     originAmount: amountSchema,
     estimatedTime: v.number(),
@@ -162,6 +163,7 @@ export const depositRefSchema = v.pipe(
 export const depositSchema = v.pipe(
   v.object({
     intent: intentSchema,
+    provider: providerShema,
     originAsset: assetSchema,
     originAmount: amountSchema,
     originReference: v.nullable(v.string()),
@@ -169,7 +171,9 @@ export const depositSchema = v.pipe(
     depositedAmount: v.nullable(amountSchema),
     refundRecipient: v.string(),
     refundAmount: v.nullable(amountSchema),
-    deadlineAt: v.string(),
+    signature: v.nullable(v.string()),
+    createdAt: v.pipe(v.string(), v.isoTimestamp()),
+    deadlineAt: v.pipe(v.string(), v.isoTimestamp()),
     status: depositStatusSchema,
   })
 )
