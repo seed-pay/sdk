@@ -4,6 +4,16 @@ import type { Asset, AssetMeta } from './types'
 
 export const API_BASE_URL = 'https://api.seedpay.io'
 
+export const DEPOSIT_WINDOW = 600_000 // 10 min
+
+export const NETWORK_BUFFER = {
+  [Network.bitcoin]: 3_600_000, // 60 min
+  [Network.ethereum]: 600_000, /// 10 min
+  [Network.arbitrum]: 300_000, /// 5 min
+  [Network.solana]: 300_000, ///// 5 min
+  [Network.tron]: 300_000, /////// 5 min
+} as const satisfies Readonly<Record<Network, number>>
+
 type IAsset = keyof typeof ASSET_META
 type AssetRegistry = {
   [K in `${Network}.${string}`]?: Omit<AssetMeta, 'network'> & {
