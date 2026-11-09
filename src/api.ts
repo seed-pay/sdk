@@ -13,6 +13,7 @@ import type {
   AssetInfo,
   Deposit,
   DepositParams,
+  DepositRef,
   Intent,
   IntentParams,
   Quote,
@@ -40,7 +41,7 @@ export const Seedpay = (baseURL: string = API_BASE_URL) => {
 
     createDeposit: (params: DepositParams) => {
       v.parse(depositParamsSchema, params)
-      return request<Deposit>('/deposits', { method: 'POST', body: params })
+      return request<DepositRef>('/deposits', { method: 'POST', body: params })
     },
 
     getDeposit: (ref: string) => request<Deposit | null>(`/deposits/${ref}`),

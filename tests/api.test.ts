@@ -15,6 +15,7 @@ import type {
   AssetInfo,
   Deposit,
   DepositParams,
+  DepositRef,
   Intent,
   IntentParams,
   Quote,
@@ -32,30 +33,37 @@ const params: IntentParams = {
 
 const intent: Intent = createIntent(params)
 
-const depositParams: DepositParams = {
-  refundRecipient: '0x2222222222222222222222222222222222222222',
-  originAsset: 'arbitrum.usdc',
-  intent,
-} as const
-
 const quoteParams: QuoteParams = {
   originAsset: 'ethereum.eth',
   intent,
 }
 
 const quote: Quote = {
-  originAsset: 'ethereum.eth',
-  amount: '0.2',
-  time: 30,
   intent,
+  originAsset: 'ethereum.eth',
+  originAmount: '0.2',
+  estimatedTime: 30,
 }
+
+const depositParams: DepositParams = {
+  intent,
+  originAsset: 'arbitrum.usdc',
+  refundRecipient: '0x2222222222222222222222222222222222222222',
+} as const
+
+const depositRef: DepositRef = {
+  ref: 'ref',
+} as const
 
 const deposit: Deposit = {
   ...depositParams,
-  destination: params.recipient,
-  amount: '0.2',
-  deadline: '2026-11-08T15:25:00.000Z',
-  status: DepositStatus.WAITING,
+  refundAmount: null,
+  originAmount: '0.2',
+  originReference: null,
+  depositDetails: params.recipient,
+  depositedAmount: '0.2',
+  deadlineAt: '2026-11-08T15:25:00.000Z',
+  status: DepositStatus.waiting,
 } as const
 
 const prices: AssetInfo[] = [{ asset: 'arbitrum.usdc', usd: 1 }] as const
@@ -88,9 +96,9 @@ describe('Api', () => {
   })
 
   test('Create deposit', async () => {
-    fetchMock.post(`${baseURL}/deposits`, { data: deposit })
+    fetchMock.post(`${baseURL}/deposits`, { data: depositRef })
 
-    expect(await api.createDeposit(depositParams)).toEqual(deposit)
+    expect(await api.createDeposit(depositParams)).toEqual(depositRef)
   })
 
   test('Get deposit', async () => {

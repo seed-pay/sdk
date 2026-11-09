@@ -5,7 +5,7 @@ import { concatBytes, utf8ToBytes } from '@noble/hashes/utils.js'
 import { parseUnits } from 'micro-eth-signer/utils.js'
 import { parse, stringify, v7 } from 'uuid'
 
-import { ASSET_META, ASSET_REFERENCE } from './assets'
+import { ASSET_META, ASSET_REFERENCE } from './constants'
 import { intentParamsSchema, intentSchema } from './types'
 
 import type { Intent, IntentParams } from './types'

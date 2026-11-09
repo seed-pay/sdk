@@ -1,9 +1,11 @@
 import * as v from 'valibot'
 
-import { ASSET_META, ASSETS, Network } from './assets'
+import { ASSET_META, ASSETS } from './constants'
 import { isDestination } from './destinations'
 import { ErrorCode } from './errors'
 import { isIntent } from './intents'
+
+import { DepositStatus, IntentType, Network, Provider } from './enums'
 
 // basic
 
@@ -17,7 +19,24 @@ export const amountSchema = v.pipe(
   v.regex(/^(0|[1-9]\d*)(\.\d+)?$/, ErrorCode.INVALID_AMOUNT)
 )
 
+export const recipientSchema = v.pipe(
+  v.string(ErrorCode.INVALID_RECIPIENT),
+  v.nonEmpty(ErrorCode.INVALID_RECIPIENT)
+)
+
+export const affiliateSchema = v.pipe(
+  v.string(ErrorCode.INVALID_AFFILIATE),
+  v.nonEmpty(ErrorCode.INVALID_AFFILIATE),
+  v.excludes('|', ErrorCode.INVALID_AFFILIATE)
+)
+
+// network
+
+export const providerShema = v.enum(Provider)
+
 export const networkSchema = v.enum(Network)
+
+// asset
 
 export const assetSchema = v.picklist(ASSETS, ErrorCode.INVALID_ASSET)
 
@@ -29,17 +48,6 @@ export const assetMetaSchema = v.object({
 })
 
 export const assetInfoSchema = v.object({ asset: assetSchema, usd: v.number() })
-
-export const recipientSchema = v.pipe(
-  v.string(ErrorCode.INVALID_RECIPIENT),
-  v.nonEmpty(ErrorCode.INVALID_RECIPIENT)
-)
-
-export const affiliateSchema = v.pipe(
-  v.string(ErrorCode.INVALID_AFFILIATE),
-  v.nonEmpty(ErrorCode.INVALID_AFFILIATE),
-  v.excludes('|', ErrorCode.INVALID_AFFILIATE)
-)
 
 // intent
 
@@ -64,6 +72,8 @@ const isValidAmount = (x: IntentObject): boolean => {
   return !fraction || fraction.length <= meta.decimals
 }
 
+export const intentTypeSchema = v.enum(IntentType)
+
 export const intentParamsSchema = v.pipe(
   intentParamsObject,
   v.forward(v.check(isValidRecipient, ErrorCode.INVALID_RECIPIENT), [
@@ -74,7 +84,10 @@ export const intentParamsSchema = v.pipe(
 
 export const intentSchema = v.pipe(
   v.object(
-    { id: uuidSchema, ...intentParamsObject.entries },
+    {
+      id: uuidSchema,
+      ...intentParamsObject.entries,
+    },
     ErrorCode.INVALID_PARAMS
   ),
   v.forward(
@@ -91,7 +104,10 @@ export const intentSchema = v.pipe(
 
 export const quoteParamsSchema = v.pipe(
   v.object(
-    { intent: intentSchema, originAsset: assetSchema },
+    {
+      intent: intentSchema,
+      originAsset: assetSchema,
+    },
     ErrorCode.INVALID_PARAMS
   ),
   v.forward(
@@ -104,21 +120,12 @@ export const quoteSchema = v.pipe(
   v.object({
     intent: intentSchema,
     originAsset: assetSchema,
-    amount: amountSchema,
-    time: v.number(),
+    originAmount: amountSchema,
+    estimatedTime: v.number(),
   })
 )
 
 // deposit
-
-export const DepositStatus = {
-  WAITING: 'WAITING',
-  EXPIRED: 'EXPIRED',
-  PROCESSING: 'PROCESSING',
-  SUCCESS: 'SUCCESS',
-  REFUNDED: 'REFUNDED',
-  FAILED: 'FAILED',
-} as const
 
 export const depositStatusSchema = v.enum(DepositStatus)
 
@@ -145,14 +152,24 @@ export const depositParamsSchema = v.pipe(
   )
 )
 
+export const depositRefSchema = v.pipe(
+  v.object({
+    ref: v.string(),
+    signature: v.optional(v.string()),
+  })
+)
+
 export const depositSchema = v.pipe(
   v.object({
-    ...depositParamsSchema.entries,
-    originAmount: v.optional(amountSchema),
-    originReference: v.optional(v.string()),
-    destination: v.string(),
-    amount: amountSchema,
-    deadline: v.string(),
+    intent: intentSchema,
+    originAsset: assetSchema,
+    originAmount: amountSchema,
+    originReference: v.nullable(v.string()),
+    depositDetails: v.string(),
+    depositedAmount: v.nullable(amountSchema),
+    refundRecipient: v.string(),
+    refundAmount: v.nullable(amountSchema),
+    deadlineAt: v.string(),
     status: depositStatusSchema,
   })
 )
@@ -166,7 +183,6 @@ export type AssetMeta = v.InferOutput<typeof assetMetaSchema>
 export type AssetInfo = v.InferOutput<typeof assetInfoSchema>
 export type Recipient = v.InferOutput<typeof recipientSchema>
 export type Affiliate = v.InferOutput<typeof affiliateSchema>
-export type NetworkType = v.InferOutput<typeof networkSchema>
 
 export type IntentParams = v.InferOutput<typeof intentParamsSchema>
 export type Intent = v.InferOutput<typeof intentSchema>
@@ -174,8 +190,8 @@ export type Intent = v.InferOutput<typeof intentSchema>
 export type QuoteParams = v.InferOutput<typeof quoteParamsSchema>
 export type Quote = v.InferOutput<typeof quoteSchema>
 
-export type DepositStatus = v.InferOutput<typeof depositStatusSchema>
 export type DepositParams = v.InferOutput<typeof depositParamsSchema>
+export type DepositRef = v.InferOutput<typeof depositRefSchema>
 export type Deposit = v.InferOutput<typeof depositSchema>
 
 export type ApiResponse<T> = { data: T }

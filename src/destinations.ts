@@ -1,10 +1,8 @@
 import { validateWalletAddress } from 'blockchain-wallet-validator'
 
-import { Network } from './assets'
+import { Network } from './enums'
 
-import type { NetworkType } from './types'
-
-const map: Record<NetworkType, string> = {
+const map: Record<Network, string> = {
   [Network.bitcoin]: 'btc',
   [Network.ethereum]: 'evm',
   [Network.arbitrum]: 'evm',
@@ -12,8 +10,5 @@ const map: Record<NetworkType, string> = {
   [Network.tron]: 'tron',
 } as const
 
-export const isDestination = (
-  network: NetworkType,
-  destination: string
-): boolean =>
+export const isDestination = (network: Network, destination: string): boolean =>
   validateWalletAddress(destination, { network: [map[network]] }, true).isValid

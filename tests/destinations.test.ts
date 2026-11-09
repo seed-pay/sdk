@@ -1,9 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { isDestination, Network } from '../src'
 
-import type { NetworkType } from '../src'
-
-const validAddresses: Record<NetworkType, string> = {
+const validAddresses: Record<Network, string> = {
   [Network.bitcoin]: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
   [Network.ethereum]: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
   [Network.arbitrum]: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
@@ -15,11 +13,11 @@ const addresses = Object.entries(validAddresses)
 
 describe('Destinations', () => {
   test.each(addresses)('Valid %s address', (network, address) => {
-    expect(isDestination(network as NetworkType, address)).toBe(true)
+    expect(isDestination(network as Network, address)).toBe(true)
   })
 
   test.each(addresses)('Invalid %s address', (network) => {
-    expect(isDestination(network as NetworkType, 'example')).toBe(false)
+    expect(isDestination(network as Network, 'example')).toBe(false)
   })
 
   test('EVM checksum', () => {
