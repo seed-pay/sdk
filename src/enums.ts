@@ -16,7 +16,7 @@ export const IntentType = {
 
 export const DepositStatus = {
   waiting: 'waiting',
-  expired: 'expired',
+  incomplete: 'incomplete',
   processing: 'processing',
   success: 'success',
   refunded: 'refunded',

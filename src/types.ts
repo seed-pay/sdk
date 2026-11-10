@@ -24,12 +24,6 @@ export const recipientSchema = v.pipe(
   v.nonEmpty(ErrorCode.INVALID_RECIPIENT)
 )
 
-export const affiliateSchema = v.pipe(
-  v.string(ErrorCode.INVALID_AFFILIATE),
-  v.nonEmpty(ErrorCode.INVALID_AFFILIATE),
-  v.excludes('|', ErrorCode.INVALID_AFFILIATE)
-)
-
 // network
 
 export const providerShema = v.enum(Provider)
@@ -56,7 +50,6 @@ const intentParamsObject = v.object(
     asset: assetSchema,
     amount: amountSchema,
     recipient: recipientSchema,
-    affiliate: v.optional(affiliateSchema),
   },
   ErrorCode.INVALID_PARAMS
 )
@@ -186,7 +179,6 @@ export type Asset = v.InferOutput<typeof assetSchema>
 export type AssetMeta = v.InferOutput<typeof assetMetaSchema>
 export type AssetInfo = v.InferOutput<typeof assetInfoSchema>
 export type Recipient = v.InferOutput<typeof recipientSchema>
-export type Affiliate = v.InferOutput<typeof affiliateSchema>
 
 export type IntentParams = v.InferOutput<typeof intentParamsSchema>
 export type Intent = v.InferOutput<typeof intentSchema>

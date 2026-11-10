@@ -11,7 +11,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -21,9 +22,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
     "test": "bun test --coverage",
-    "patch": "bun pm version patch && git push --follow-tags"
+    "build": "tsup src/index.ts --format esm --dts",
+    "release:patch": "bun pm version patch && git push --follow-tags",
+    "release:minor": "bun pm version minor && git push --follow-tags",
+    "release:major": "bun pm version major && git push --follow-tags"
   },
   "dependencies": {
     "@noble/hashes": "2.4.0",

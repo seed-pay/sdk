@@ -81,12 +81,6 @@ afterEach(() => {
 })
 
 describe('Api', () => {
-  test('Create intent', async () => {
-    fetchMock.post(`${baseURL}/intents`, { data: intent })
-
-    expect(await api.createIntent(params)).toEqual(intent)
-  })
-
   test('Get assets', async () => {
     fetchMock.get(`${baseURL}/assets`, { data: prices })
 
@@ -97,6 +91,33 @@ describe('Api', () => {
     fetchMock.post(`${baseURL}/quotes`, { data: quote })
 
     expect(await api.createQuote(quoteParams)).toEqual(quote)
+  })
+
+  test('Create intent', async () => {
+    fetchMock.post(`${baseURL}/intents`, { data: intent })
+
+    expect(await api.createIntent(params)).toEqual(intent)
+  })
+
+  test('Get intent', async () => {
+    fetchMock.get(`${baseURL}/intents/ref`, { data: intent })
+
+    expect(await api.getIntent('ref')).toEqual(intent)
+  })
+
+  test('Get not found intent', async () => {
+    fetchMock.get(`${baseURL}/intents/ref`, {
+      body: { data: null },
+      status: 404,
+    })
+
+    expect(await api.getIntent('ref')).toEqual(null)
+  })
+
+  test('Get intent throws on error', async () => {
+    fetchMock.get(`${baseURL}/intents/ref`, { status: 502 })
+
+    expect(api.getIntent('ref')).rejects.toThrow()
   })
 
   test('Create deposit', async () => {
@@ -116,6 +137,13 @@ describe('Api', () => {
       body: { data: null },
       status: 404,
     })
+
+    expect(await api.getDeposit('ref')).toEqual(null)
+  })
+
+  test('Get deposit throws on error', async () => {
+    fetchMock.get(`${baseURL}/deposits/ref`, { status: 502 })
+
     expect(api.getDeposit('ref')).rejects.toThrow()
   })
 

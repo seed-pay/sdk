@@ -19,14 +19,6 @@ describe('Intent', () => {
     expect(intent.asset).toBe(params.asset)
     expect(intent.amount).toBe(params.amount)
     expect(intent.recipient).toBe(params.recipient)
-    expect(intent.affiliate).toBe(params.affiliate)
-    expect(isIntent(intent)).toBe(true)
-  })
-
-  test('Create intent without affiliate', () => {
-    const intent = createIntent({ ...params, affiliate: undefined })
-
-    expect(intent.affiliate).toBeUndefined()
     expect(isIntent(intent)).toBe(true)
   })
 
@@ -71,15 +63,6 @@ describe('Intent', () => {
     expect(call).toThrow(ErrorCode.INVALID_RECIPIENT)
   })
 
-  test('Reject invalid affiliate', () => {
-    const affiliates = ['', 'affiliate|123']
-
-    affiliates.forEach((affiliate) => {
-      const call = () => createIntent({ ...params, affiliate })
-      expect(call).toThrow(ErrorCode.INVALID_AFFILIATE)
-    })
-  })
-
   test('Reject modified id', () => {
     const intent = { ...createIntent(params), id: v7() }
 
@@ -108,14 +91,5 @@ describe('Intent', () => {
     const invalidIntent = { ...intent, recipient }
 
     expect(isIntent(invalidIntent)).toBe(false)
-  })
-
-  test('Reject modified affiliate', () => {
-    const intent = createIntent(params)
-    const simple = createIntent({ ...params, affiliate: undefined })
-
-    expect(isIntent({ ...intent, affiliate: undefined })).toBe(false)
-    expect(isIntent({ ...intent, affiliate: 'another' })).toBe(false)
-    expect(isIntent({ ...simple, affiliate: 'another' })).toBe(false)
   })
 })

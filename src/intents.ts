@@ -2,11 +2,11 @@ import * as v from 'valibot'
 
 import { sha256 } from '@noble/hashes/sha2.js'
 import { concatBytes, utf8ToBytes } from '@noble/hashes/utils.js'
-import { parseUnits } from 'micro-eth-signer/utils.js'
 import { parse, stringify, v7 } from 'uuid'
 
 import { ASSET_META, ASSET_REFERENCE } from './constants'
 import { intentParamsSchema, intentSchema } from './types'
+import { parseUnits } from './utils'
 
 import type { Intent, IntentParams } from './types'
 
@@ -15,17 +15,15 @@ const NONCE_BYTES = 11
 const SEPARATOR = '|'
 
 const hashIntent = (params: IntentParams, nonce: Uint8Array): Uint8Array => {
-  const { asset, amount, recipient, affiliate } = params
+  const { asset, amount, recipient } = params
   const { decimals } = ASSET_META[asset]
 
-  const payload = utf8ToBytes(
-    [
-      ASSET_REFERENCE[asset],
-      String(parseUnits(amount, decimals)),
-      recipient,
-      affiliate ?? '',
-    ].join(SEPARATOR)
-  )
+  const payloadStr = [
+    ASSET_REFERENCE[asset],
+    parseUnits(amount, decimals),
+    recipient,
+  ]
+  const payload = utf8ToBytes(payloadStr.join(SEPARATOR))
 
   return sha256(concatBytes(payload, nonce)).slice(0, HASH_BYTES)
 }
