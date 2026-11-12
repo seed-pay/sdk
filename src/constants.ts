@@ -1,8 +1,9 @@
-import { DepositStatus, IntentType, Network, Provider } from './enums'
+import { IntentType, Network, Provider, QuoteStatus } from './enums'
 
 import type { Asset, AssetMeta } from './types'
 
 export const API_BASE_URL = 'https://api.seedpay.io'
+export const SEEDPAY_URL = 'https://seedpay.io'
 
 export const DEPOSIT_WINDOW = 600_000 // 10 min
 
@@ -94,4 +95,4 @@ export const PROVIDERS = Object.keys(Provider) as [Provider]
 export const NETWORKS = Object.keys(Network) as [Network]
 export const ASSETS = Object.keys(ASSET_META) as [IAsset]
 export const INTENT_TYPES = Object.keys(IntentType) as [IntentType]
-export const DEPOSIT_STATUSES = Object.keys(DepositStatus) as [DepositStatus]
+export const QUOTE_STATUSES = Object.keys(QuoteStatus) as [QuoteStatus]

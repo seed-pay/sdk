@@ -14,7 +14,7 @@ export const IntentType = {
   exact_out: 'exact_out',
 } as const
 
-export const DepositStatus = {
+export const QuoteStatus = {
   waiting: 'waiting',
   incomplete: 'incomplete',
   processing: 'processing',
@@ -26,4 +26,4 @@ export const DepositStatus = {
 export type Provider = (typeof Provider)[keyof typeof Provider]
 export type Network = (typeof Network)[keyof typeof Network]
 export type IntentType = (typeof IntentType)[keyof typeof IntentType]
-export type DepositStatus = (typeof DepositStatus)[keyof typeof DepositStatus]
+export type QuoteStatus = (typeof QuoteStatus)[keyof typeof QuoteStatus]

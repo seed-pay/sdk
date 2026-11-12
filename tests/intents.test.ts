@@ -5,9 +5,8 @@ import { createIntent, ErrorCode, isIntent, type Asset } from '../src'
 
 const params = {
   asset: 'arbitrum.usdc',
-  amount: '0.2',
+  amount: '10000000',
   recipient: '0x1111111111111111111111111111111111111111',
-  affiliate: '@affiliate',
 } as const
 
 describe('Intent', () => {
@@ -33,13 +32,6 @@ describe('Intent', () => {
     expect(validate(second.id)).toBe(true)
   })
 
-  test('Create intent normalizes amount', () => {
-    const intent = createIntent(params)
-
-    expect(isIntent({ ...intent, amount: '0.20' })).toBe(true)
-    expect(isIntent({ ...intent, amount: '0.200000' })).toBe(true)
-  })
-
   test('Reject invalid amount', () => {
     const amounts = ['-1', 'abc', '1e3', '', '0.1234567']
 
@@ -60,7 +52,7 @@ describe('Intent', () => {
     const recipient = 'invalid'
     const call = () => createIntent({ ...params, recipient })
 
-    expect(call).toThrow(ErrorCode.INVALID_RECIPIENT)
+    expect(call).toThrow(ErrorCode.INVALID_DESTINATION)
   })
 
   test('Reject modified id', () => {
@@ -72,7 +64,7 @@ describe('Intent', () => {
 
   test('Reject modified amount', () => {
     const intent = createIntent(params)
-    const invalidIntent = { ...intent, amount: '0.3' }
+    const invalidIntent = { ...intent, amount: '0' }
 
     expect(isIntent(invalidIntent)).toBe(false)
   })

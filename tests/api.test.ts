@@ -8,18 +8,18 @@ import {
 } from 'bun:test'
 import fetchMock from 'fetch-mock'
 
-import { createIntent, DepositStatus, ErrorCode, Seedpay } from '../src'
+import { createIntent, ErrorCode, QuoteStatus, Seedpay } from '../src'
 
 import type {
   Asset,
   AssetInfo,
-  Deposit,
-  DepositParams,
-  DepositRef,
   Intent,
   IntentParams,
   Quote,
   QuoteParams,
+  QuotePreview,
+  QuotePreviewParams,
+  QuoteRef,
 } from '../src'
 
 const baseURL = 'https://example.com'
@@ -28,46 +28,46 @@ const api = Seedpay(baseURL)
 const params: IntentParams = {
   recipient: '0x1111111111111111111111111111111111111111',
   asset: 'arbitrum.usdc',
-  amount: '0.2',
+  amount: '10000000',
 } as const
 
 const intent: Intent = createIntent(params)
 
-const quoteParams: QuoteParams = {
+const quotePreviewParams: QuotePreviewParams = {
   originAsset: 'ethereum.eth',
   intent,
 }
 
-const quote: Quote = {
+const quotePreview: QuotePreview = {
   intent,
   provider: 'near',
   originAsset: 'ethereum.eth',
-  originAmount: '0.2',
+  originAmount: '10000000',
   estimatedTime: 30,
 }
 
-const depositParams: DepositParams = {
+const quoteParams: QuoteParams = {
   intent,
   originAsset: 'arbitrum.usdc',
   refundRecipient: '0x2222222222222222222222222222222222222222',
 } as const
 
-const depositRef: DepositRef = {
+const quoteRef: QuoteRef = {
   ref: 'ref',
 } as const
 
-const deposit: Deposit = {
-  ...depositParams,
+const quote: Quote = {
+  ...quoteParams,
   provider: 'near',
   refundAmount: null,
-  originAmount: '0.2',
-  originReference: null,
+  originAmount: '10000000',
+  originReferences: [],
   depositDetails: params.recipient,
-  depositedAmount: '0.2',
+  depositedAmount: '2000',
   createdAt: '2026-11-08T15:25:00.000Z',
   deadlineAt: '2026-11-08T15:25:00.000Z',
   signature: 'signature',
-  status: DepositStatus.waiting,
+  status: QuoteStatus.waiting,
 } as const
 
 const prices: AssetInfo[] = [{ asset: 'arbitrum.usdc', usd: 1 }] as const
@@ -85,12 +85,6 @@ describe('Api', () => {
     fetchMock.get(`${baseURL}/assets`, { data: prices })
 
     expect(await api.getAssets()).toEqual(prices)
-  })
-
-  test('Get quote', async () => {
-    fetchMock.post(`${baseURL}/quotes`, { data: quote })
-
-    expect(await api.createQuote(quoteParams)).toEqual(quote)
   })
 
   test('Create intent', async () => {
@@ -120,31 +114,37 @@ describe('Api', () => {
     expect(api.getIntent('ref')).rejects.toThrow()
   })
 
-  test('Create deposit', async () => {
-    fetchMock.post(`${baseURL}/deposits`, { data: depositRef })
+  test('Preview quote', async () => {
+    fetchMock.post(`${baseURL}/quotes/preview`, { data: quotePreview })
 
-    expect(await api.createDeposit(depositParams)).toEqual(depositRef)
+    expect(await api.previewQuote(quotePreviewParams)).toEqual(quotePreview)
   })
 
-  test('Get deposit', async () => {
-    fetchMock.get(`${baseURL}/deposits/ref`, { data: deposit })
+  test('Create quote', async () => {
+    fetchMock.post(`${baseURL}/quotes`, { data: quoteRef })
 
-    expect(await api.getDeposit('ref')).toEqual(deposit)
+    expect(await api.createQuote(quoteParams)).toEqual(quoteRef)
   })
 
-  test('Get not found deposit', async () => {
-    fetchMock.get(`${baseURL}/deposits/ref`, {
+  test('Get quote', async () => {
+    fetchMock.get(`${baseURL}/quotes/ref`, { data: quote })
+
+    expect(await api.getQuote('ref')).toEqual(quote)
+  })
+
+  test('Get not found quote', async () => {
+    fetchMock.get(`${baseURL}/quotes/ref`, {
       body: { data: null },
       status: 404,
     })
 
-    expect(await api.getDeposit('ref')).toEqual(null)
+    expect(await api.getQuote('ref')).toEqual(null)
   })
 
-  test('Get deposit throws on error', async () => {
-    fetchMock.get(`${baseURL}/deposits/ref`, { status: 502 })
+  test('Get quote throws on error', async () => {
+    fetchMock.get(`${baseURL}/quotes/ref`, { status: 502 })
 
-    expect(api.getDeposit('ref')).rejects.toThrow()
+    expect(api.getQuote('ref')).rejects.toThrow()
   })
 
   test('Validate intent params', () => {
@@ -153,16 +153,17 @@ describe('Api', () => {
     expect(call).toThrow(ErrorCode.INVALID_AMOUNT)
   })
 
-  test('Validate quote params', () => {
+  test('Validate quote preview params', () => {
     const invalid = { ...intent, amount: '90' }
-    const call = () => api.createQuote({ ...quoteParams, intent: invalid })
+    const call = () =>
+      api.previewQuote({ ...quotePreviewParams, intent: invalid })
 
     expect(call).toThrow(ErrorCode.INVALID_INTENT)
   })
 
-  test('Validate deposit params', () => {
+  test('Validate quote params', () => {
     const call = () =>
-      api.createDeposit({ ...depositParams, originAsset: 'invalid' as Asset })
+      api.createQuote({ ...quoteParams, originAsset: 'invalid' as Asset })
 
     expect(call).toThrow(ErrorCode.INVALID_ASSET)
   })

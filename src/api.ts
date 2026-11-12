@@ -3,22 +3,22 @@ import * as v from 'valibot'
 
 import { API_BASE_URL } from './constants'
 import {
-  depositParamsSchema,
   intentParamsSchema,
   quoteParamsSchema,
+  quotePreviewParamsSchema,
 } from './types'
 
 import type { FetchOptions } from 'ofetch'
 import type {
   ApiResponse,
   AssetInfo,
-  Deposit,
-  DepositParams,
-  DepositRef,
   Intent,
   IntentParams,
   Quote,
   QuoteParams,
+  QuotePreview,
+  QuotePreviewParams,
+  QuoteRef,
 } from './types'
 
 export const Seedpay = (baseURL: string = API_BASE_URL) => {
@@ -41,18 +41,21 @@ export const Seedpay = (baseURL: string = API_BASE_URL) => {
         throw error
       }),
 
-    createQuote: (params: QuoteParams): Promise<Quote> => {
+    previewQuote: (params: QuotePreviewParams): Promise<QuotePreview> => {
+      v.parse(quotePreviewParamsSchema, params)
+      return request<QuotePreview>('/quotes/preview', {
+        method: 'POST',
+        body: params,
+      })
+    },
+
+    createQuote: (params: QuoteParams): Promise<QuoteRef> => {
       v.parse(quoteParamsSchema, params)
-      return request<Quote>('/quotes', { method: 'POST', body: params })
+      return request<QuoteRef>('/quotes', { method: 'POST', body: params })
     },
 
-    createDeposit: (params: DepositParams): Promise<DepositRef> => {
-      v.parse(depositParamsSchema, params)
-      return request<DepositRef>('/deposits', { method: 'POST', body: params })
-    },
-
-    getDeposit: (ref: string): Promise<Deposit | null> =>
-      request<Deposit | null>(`/deposits/${ref}`).catch((error) => {
+    getQuote: (ref: string): Promise<Quote | null> =>
+      request<Quote | null>(`/quotes/${ref}`).catch((error) => {
         if (error.status === 404) return null
         throw error
       }),
