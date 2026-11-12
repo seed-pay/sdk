@@ -112,22 +112,20 @@ export const quoteStatusSchema = v.enum(QuoteStatus)
 
 export const quotePreviewParamsSchema = v.pipe(
   v.object(
-    { intent: intentSchema, originAsset: assetSchema },
+    {
+      originAsset: assetSchema,
+      destinationAsset: assetSchema,
+      amount: amountSchema,
+    },
     ErrorCode.INVALID_PARAMS
-  ),
-  v.forward(
-    v.check(({ intent }) => isIntent(intent), ErrorCode.INVALID_INTENT),
-    ['intent']
   )
 )
 
 export const quotePreviewSchema = v.pipe(
   v.object({
-    intent: intentSchema,
-    provider: providerShema,
-    originAsset: assetSchema,
-    originAmount: amountSchema,
+    amount: amountSchema,
     estimatedTime: v.number(),
+    provider: providerShema,
   })
 )
 

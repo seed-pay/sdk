@@ -35,14 +35,13 @@ const intent: Intent = createIntent(params)
 
 const quotePreviewParams: QuotePreviewParams = {
   originAsset: 'ethereum.eth',
-  intent,
+  destinationAsset: 'ethereum.eth',
+  amount: '10000',
 }
 
 const quotePreview: QuotePreview = {
-  intent,
   provider: 'near',
-  originAsset: 'ethereum.eth',
-  originAmount: '10000000',
+  amount: '10000000',
   estimatedTime: 30,
 }
 
@@ -156,9 +155,9 @@ describe('Api', () => {
   test('Validate quote preview params', () => {
     const invalid = { ...intent, amount: '90' }
     const call = () =>
-      api.previewQuote({ ...quotePreviewParams, intent: invalid })
+      api.previewQuote({ ...quotePreviewParams, amount: '-1000' })
 
-    expect(call).toThrow(ErrorCode.INVALID_INTENT)
+    expect(call).toThrow(ErrorCode.INVALID_AMOUNT)
   })
 
   test('Validate quote params', () => {
