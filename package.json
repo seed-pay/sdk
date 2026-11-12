@@ -4,7 +4,7 @@
   "homepage": "https://seedpay.io",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/seed-pay/seedpay-sdk.git"
+    "url": "git+https://github.com/seed-pay/sdk"
   },
   "type": "module",
   "sideEffects": false,
