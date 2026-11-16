@@ -43,10 +43,7 @@ export const Seedpay = (baseURL: string = API_BASE_URL) => {
 
     previewQuote: (params: QuotePreviewParams): Promise<QuotePreview> => {
       v.parse(quotePreviewParamsSchema, params)
-      return request<QuotePreview>('/quotes/preview', {
-        method: 'POST',
-        body: params,
-      })
+      return request<QuotePreview>('/quotes/preview', { query: params })
     },
 
     createQuote: (params: QuoteParams): Promise<QuoteRef> => {

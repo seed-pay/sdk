@@ -114,7 +114,7 @@ describe('Api', () => {
   })
 
   test('Preview quote', async () => {
-    fetchMock.post(`${baseURL}/quotes/preview`, { data: quotePreview })
+    fetchMock.get(`begin:${baseURL}/quotes/preview`, { data: quotePreview })
 
     expect(await api.previewQuote(quotePreviewParams)).toEqual(quotePreview)
   })
