@@ -6,8 +6,8 @@
     "type": "git",
     "url": "git+https://github.com/seed-pay/sdk"
   },
-  "type": "module",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -18,15 +18,13 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
-    "test": "bun test --coverage",
     "build": "tsup src/index.ts --format esm --dts",
-    "release:patch": "bun pm version patch && git push --follow-tags",
+    "release:major": "bun pm version major && git push --follow-tags",
     "release:minor": "bun pm version minor && git push --follow-tags",
-    "release:major": "bun pm version major && git push --follow-tags"
+    "release:patch": "bun pm version patch && git push --follow-tags",
+    "test": "bun test --coverage",
+    "tidy": "bunx --bun sort-package-json"
   },
   "dependencies": {
     "@noble/hashes": "2.4.0",
@@ -41,5 +39,8 @@
     "fetch-mock": "12.6.0",
     "tsup": "9.0.0",
     "typescript": "5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

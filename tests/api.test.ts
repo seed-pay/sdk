@@ -81,25 +81,25 @@ afterEach(() => {
 
 describe('Api', () => {
   test('Get assets', async () => {
-    fetchMock.get(`${baseURL}/assets`, { data: prices })
+    fetchMock.get(`${baseURL}/v1/assets`, { data: prices })
 
     expect(await api.getAssets()).toEqual(prices)
   })
 
   test('Create intent', async () => {
-    fetchMock.post(`${baseURL}/intents`, { data: intent })
+    fetchMock.post(`${baseURL}/v1/intents`, { data: intent })
 
     expect(await api.createIntent(params)).toEqual(intent)
   })
 
   test('Get intent', async () => {
-    fetchMock.get(`${baseURL}/intents/ref`, { data: intent })
+    fetchMock.get(`${baseURL}/v1/intents/ref`, { data: intent })
 
     expect(await api.getIntent('ref')).toEqual(intent)
   })
 
   test('Get not found intent', async () => {
-    fetchMock.get(`${baseURL}/intents/ref`, {
+    fetchMock.get(`${baseURL}/v1/intents/ref`, {
       body: { data: null },
       status: 404,
     })
@@ -108,31 +108,31 @@ describe('Api', () => {
   })
 
   test('Get intent throws on error', async () => {
-    fetchMock.get(`${baseURL}/intents/ref`, { status: 502 })
+    fetchMock.get(`${baseURL}/v1/intents/ref`, { status: 502 })
 
     expect(api.getIntent('ref')).rejects.toThrow()
   })
 
   test('Preview quote', async () => {
-    fetchMock.get(`begin:${baseURL}/quotes/preview`, { data: quotePreview })
+    fetchMock.get(`begin:${baseURL}/v1/quotes/preview`, { data: quotePreview })
 
     expect(await api.previewQuote(quotePreviewParams)).toEqual(quotePreview)
   })
 
   test('Create quote', async () => {
-    fetchMock.post(`${baseURL}/quotes`, { data: quoteRef })
+    fetchMock.post(`${baseURL}/v1/quotes`, { data: quoteRef })
 
     expect(await api.createQuote(quoteParams)).toEqual(quoteRef)
   })
 
   test('Get quote', async () => {
-    fetchMock.get(`${baseURL}/quotes/ref`, { data: quote })
+    fetchMock.get(`${baseURL}/v1/quotes/ref`, { data: quote })
 
     expect(await api.getQuote('ref')).toEqual(quote)
   })
 
   test('Get not found quote', async () => {
-    fetchMock.get(`${baseURL}/quotes/ref`, {
+    fetchMock.get(`${baseURL}/v1/quotes/ref`, {
       body: { data: null },
       status: 404,
     })
@@ -141,7 +141,7 @@ describe('Api', () => {
   })
 
   test('Get quote throws on error', async () => {
-    fetchMock.get(`${baseURL}/quotes/ref`, { status: 502 })
+    fetchMock.get(`${baseURL}/v1/quotes/ref`, { status: 502 })
 
     expect(api.getQuote('ref')).rejects.toThrow()
   })

@@ -1,11 +1,11 @@
 import * as v from 'valibot'
 
-import { ASSET_META, ASSETS } from './constants'
+import { ASSET_META } from './constants'
 import { isDestination } from './destinations'
 import { ErrorCode } from './errors'
 import { isIntent } from './intents'
 
-import { IntentType, Network, Provider, QuoteStatus } from './enums'
+import { Asset, IntentType, Network, Provider, QuoteStatus } from './enums'
 
 // basic
 
@@ -36,19 +36,25 @@ export const recipientSchema = v.pipe(
 
 // network
 
-export const providerShema = v.enum(Provider)
+export const providerSchema = v.enum(Provider, ErrorCode.INVALID_PROVIDER)
 
-export const networkSchema = v.enum(Network)
+export const networkSchema = v.enum(Network, ErrorCode.INVALID_NETWORK)
 
-// asset
+export const assetSchema = v.enum(Asset, ErrorCode.INVALID_ASSET)
 
-export const assetSchema = v.picklist(ASSETS, ErrorCode.INVALID_ASSET)
+export const networkMetaSchema = v.object({
+  name: v.string(),
+  symbol: v.string(),
+  asset: assetSchema,
+  buffer: v.number(),
+})
 
 export const assetMetaSchema = v.object({
   network: networkSchema,
   name: v.string(),
   symbol: v.string(),
   decimals: v.number(),
+  ref: v.string(),
 })
 
 export const assetInfoSchema = v.object({ asset: assetSchema, usd: v.number() })
@@ -125,7 +131,7 @@ export const quotePreviewSchema = v.pipe(
   v.object({
     amount: amountSchema,
     estimatedTime: v.number(),
-    provider: providerShema,
+    provider: providerSchema,
   })
 )
 
@@ -162,7 +168,7 @@ export const quoteRefSchema = v.pipe(
 export const quoteSchema = v.pipe(
   v.object({
     intent: intentSchema,
-    provider: providerShema,
+    provider: providerSchema,
     originAsset: assetSchema,
     originAmount: amountSchema,
     originReferences: v.array(v.string()),
@@ -191,7 +197,7 @@ export const extraSchema = v.object({
 
 export type UUID = v.InferOutput<typeof uuidSchema>
 export type Amount = v.InferOutput<typeof amountSchema>
-export type Asset = v.InferOutput<typeof assetSchema>
+export type NetworkMeta = v.InferOutput<typeof networkMetaSchema>
 export type AssetMeta = v.InferOutput<typeof assetMetaSchema>
 export type AssetInfo = v.InferOutput<typeof assetInfoSchema>
 export type Recipient = v.InferOutput<typeof recipientSchema>

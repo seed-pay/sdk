@@ -28,31 +28,31 @@ export const Seedpay = (baseURL: string = API_BASE_URL) => {
     api<ApiResponse<T>>(url, options).then(({ data }) => data)
 
   return {
-    getAssets: (): Promise<AssetInfo[]> => request<AssetInfo[]>('/assets'),
+    getAssets: (): Promise<AssetInfo[]> => request<AssetInfo[]>('/v1/assets'),
 
     createIntent: (params: IntentParams): Promise<Intent> => {
       v.parse(intentParamsSchema, params)
-      return request<Intent>('/intents', { method: 'POST', body: params })
+      return request<Intent>('/v1/intents', { method: 'POST', body: params })
     },
 
     getIntent: (id: string): Promise<Intent | null> =>
-      request<Intent>(`/intents/${id}`).catch((error) => {
+      request<Intent>(`/v1/intents/${id}`).catch((error) => {
         if (error.status === 404) return null
         throw error
       }),
 
     previewQuote: (params: QuotePreviewParams): Promise<QuotePreview> => {
       v.parse(quotePreviewParamsSchema, params)
-      return request<QuotePreview>('/quotes/preview', { query: params })
+      return request<QuotePreview>('/v1/quotes/preview', { query: params })
     },
 
     createQuote: (params: QuoteParams): Promise<QuoteRef> => {
       v.parse(quoteParamsSchema, params)
-      return request<QuoteRef>('/quotes', { method: 'POST', body: params })
+      return request<QuoteRef>('/v1/quotes', { method: 'POST', body: params })
     },
 
     getQuote: (ref: string): Promise<Quote | null> =>
-      request<Quote | null>(`/quotes/${ref}`).catch((error) => {
+      request<Quote | null>(`/v1/quotes/${ref}`).catch((error) => {
         if (error.status === 404) return null
         throw error
       }),
