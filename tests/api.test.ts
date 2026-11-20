@@ -13,8 +13,9 @@ import { createIntent, ErrorCode, QuoteStatus, Seedpay } from '../src'
 import type {
   Asset,
   AssetInfo,
+  CreateIntentParams,
   Intent,
-  IntentParams,
+  IntentInfo,
   Quote,
   QuoteParams,
   QuotePreview,
@@ -25,13 +26,17 @@ import type {
 const baseURL = 'https://example.com'
 const api = Seedpay(baseURL)
 
-const params: IntentParams = {
-  recipient: '0x1111111111111111111111111111111111111111',
-  asset: 'arbitrum.usdc',
-  amount: '10000000',
+const params: CreateIntentParams = {
+  intent: {
+    recipient: '0x1111111111111111111111111111111111111111',
+    asset: 'arbitrum.usdc',
+    amount: '10000000',
+  },
 } as const
 
-const intent: Intent = createIntent(params)
+const intent: Intent = createIntent(params.intent)
+
+const intentInfo: IntentInfo = { intent, transactions: [], success: false }
 
 const quotePreviewParams: QuotePreviewParams = {
   originAsset: 'ethereum.eth',
@@ -61,10 +66,11 @@ const quote: Quote = {
   refundAmount: null,
   originAmount: '10000000',
   originReferences: [],
-  depositDetails: params.recipient,
+  depositDetails: params.intent.recipient,
   depositedAmount: '2000',
   createdAt: '2026-11-08T15:25:00.000Z',
   deadlineAt: '2026-11-08T15:25:00.000Z',
+  updatedAt: '2026-11-08T15:25:00.000Z',
   signature: 'signature',
   status: QuoteStatus.waiting,
 } as const
@@ -87,15 +93,15 @@ describe('Api', () => {
   })
 
   test('Create intent', async () => {
-    fetchMock.post(`${baseURL}/v1/intents`, { data: intent })
+    fetchMock.post(`${baseURL}/v1/intents`, { data: intentInfo })
 
-    expect(await api.createIntent(params)).toEqual(intent)
+    expect(await api.createIntent(params)).toEqual(intentInfo)
   })
 
   test('Get intent', async () => {
-    fetchMock.get(`${baseURL}/v1/intents/ref`, { data: intent })
+    fetchMock.get(`${baseURL}/v1/intents/ref`, { data: intentInfo })
 
-    expect(await api.getIntent('ref')).toEqual(intent)
+    expect(await api.getIntent('ref')).toEqual(intentInfo)
   })
 
   test('Get not found intent', async () => {
@@ -147,7 +153,8 @@ describe('Api', () => {
   })
 
   test('Validate intent params', () => {
-    const call = () => api.createIntent({ ...params, amount: 'invalid' })
+    const call = () =>
+      api.createIntent({ intent: { ...params.intent, amount: 'invalid' } })
 
     expect(call).toThrow(ErrorCode.INVALID_AMOUNT)
   })

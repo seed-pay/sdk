@@ -34,13 +34,13 @@ export const createIntent = (params: IntentParams): Intent => {
   return { id: stringify(idBytes), ...input }
 }
 
-export const isIntent = (intent: Intent): boolean => {
+export const isIntent = (params: unknown): boolean => {
   try {
-    const params = v.parse(intentSchema, intent)
-    const { id, ...input } = params
+    const input = v.parse(intentSchema, params)
+    const { id, ...payload } = input
     const idBytes = parse(id)
     const nonce = idBytes.slice(0, NONCE_BYTES)
-    const hash = hashIntent(input, nonce)
+    const hash = hashIntent(payload, nonce)
 
     const valid = hash.every((x, index) => x === idBytes[NONCE_BYTES + index])
 

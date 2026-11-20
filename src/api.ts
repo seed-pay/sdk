@@ -3,7 +3,7 @@ import * as v from 'valibot'
 
 import { API_BASE_URL } from './constants'
 import {
-  intentParamsSchema,
+  createIntentParamsSchema,
   quoteParamsSchema,
   quotePreviewParamsSchema,
 } from './types'
@@ -12,8 +12,8 @@ import type { FetchOptions } from 'ofetch'
 import type {
   ApiResponse,
   AssetInfo,
-  Intent,
-  IntentParams,
+  CreateIntentParams,
+  IntentInfo,
   Quote,
   QuoteParams,
   QuotePreview,
@@ -30,13 +30,16 @@ export const Seedpay = (baseURL: string = API_BASE_URL) => {
   return {
     getAssets: (): Promise<AssetInfo[]> => request<AssetInfo[]>('/v1/assets'),
 
-    createIntent: (params: IntentParams): Promise<Intent> => {
-      v.parse(intentParamsSchema, params)
-      return request<Intent>('/v1/intents', { method: 'POST', body: params })
+    createIntent: (params: CreateIntentParams): Promise<IntentInfo> => {
+      v.parse(createIntentParamsSchema, params)
+      return request<IntentInfo>('/v1/intents', {
+        method: 'POST',
+        body: params,
+      })
     },
 
-    getIntent: (id: string): Promise<Intent | null> =>
-      request<Intent>(`/v1/intents/${id}`).catch((error) => {
+    getIntent: (id: string): Promise<IntentInfo | null> =>
+      request<IntentInfo>(`/v1/intents/${id}`).catch((error) => {
         if (error.status === 404) return null
         throw error
       }),

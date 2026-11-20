@@ -40,8 +40,16 @@ export const QuoteStatus = {
   failed: 'failed',
 } as const
 
+export const TransactionStatus = {
+  success: 'success',
+  refunded: 'refunded',
+  failed: 'failed',
+} as const
+
 export type Asset = (typeof Asset)[keyof typeof Asset]
 export type Provider = (typeof Provider)[keyof typeof Provider]
 export type Network = (typeof Network)[keyof typeof Network]
 export type IntentType = (typeof IntentType)[keyof typeof IntentType]
 export type QuoteStatus = (typeof QuoteStatus)[keyof typeof QuoteStatus]
+export type TransactionStatus =
+  (typeof TransactionStatus)[keyof typeof TransactionStatus]

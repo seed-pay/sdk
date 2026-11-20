@@ -5,7 +5,14 @@ import { isDestination } from './destinations'
 import { ErrorCode } from './errors'
 import { isIntent } from './intents'
 
-import { Asset, IntentType, Network, Provider, QuoteStatus } from './enums'
+import {
+  Asset,
+  IntentType,
+  Network,
+  Provider,
+  QuoteStatus,
+  TransactionStatus,
+} from './enums'
 
 // basic
 
@@ -83,12 +90,19 @@ const isValidAmount = (x: IntentObject): boolean => {
 
 export const intentTypeSchema = v.enum(IntentType)
 
+export const transactionStatusSchema = v.enum(TransactionStatus)
+
 export const intentParamsSchema = v.pipe(
   intentParamsObject,
   v.forward(v.check(isValidDestination, ErrorCode.INVALID_DESTINATION), [
     'recipient',
   ]),
   v.forward(v.check(isValidAmount, ErrorCode.INVALID_AMOUNT), ['amount'])
+)
+
+export const createIntentParamsSchema = v.object(
+  { intent: intentParamsSchema },
+  ErrorCode.INVALID_PARAMS
 )
 
 export const intentSchema = v.pipe(
@@ -111,6 +125,14 @@ export const intentSchema = v.pipe(
     ['amount']
   )
 )
+
+export const intentInfoSchema = v.object({
+  intent: intentSchema,
+  transactions: v.array(
+    v.object({ id: uuidSchema, status: transactionStatusSchema })
+  ),
+  success: v.boolean(),
+})
 
 // quote
 
@@ -178,6 +200,7 @@ export const quoteSchema = v.pipe(
     refundAmount: v.nullable(amountSchema),
     signature: v.nullable(v.string()),
     createdAt: v.pipe(v.string(), v.isoTimestamp()),
+    updatedAt: v.pipe(v.string(), v.isoTimestamp()),
     deadlineAt: v.pipe(v.string(), v.isoTimestamp()),
     status: quoteStatusSchema,
   })
@@ -186,11 +209,11 @@ export const quoteSchema = v.pipe(
 // link
 
 export const extraSchema = v.object({
-  method: v.optional(assetSchema),
-  label: v.optional(v.string()),
-  symbol: v.optional(v.string()),
-  return: v.optional(urlSchema),
   displayAmount: v.optional(displayAmountSchema),
+  displaySymbol: v.optional(v.string()),
+  displayLabel: v.optional(v.string()),
+  method: v.optional(assetSchema),
+  return: v.optional(urlSchema),
 })
 
 // types
@@ -202,7 +225,9 @@ export type AssetMeta = v.InferOutput<typeof assetMetaSchema>
 export type AssetInfo = v.InferOutput<typeof assetInfoSchema>
 export type Recipient = v.InferOutput<typeof recipientSchema>
 
+export type CreateIntentParams = v.InferOutput<typeof createIntentParamsSchema>
 export type IntentParams = v.InferOutput<typeof intentParamsSchema>
+export type IntentInfo = v.InferOutput<typeof intentInfoSchema>
 export type Intent = v.InferOutput<typeof intentSchema>
 
 export type QuotePreviewParams = v.InferOutput<typeof quotePreviewParamsSchema>

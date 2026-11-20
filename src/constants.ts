@@ -8,6 +8,12 @@ export const SEEDPAY_URL = 'https://seedpay.io'
 export const DEPOSIT_WINDOW = 900_000 // 15 min
 
 export const NETWORK_META: Record<Network, NetworkMeta> = {
+  arbitrum: {
+    name: 'Arbitrum',
+    symbol: 'ARB',
+    asset: 'arbitrum.eth',
+    buffer: 300_000, // 5 min
+  },
   bitcoin: {
     name: 'Bitcoin',
     symbol: 'BTC',
@@ -19,12 +25,6 @@ export const NETWORK_META: Record<Network, NetworkMeta> = {
     symbol: 'ETH',
     asset: 'ethereum.eth',
     buffer: 600_000, // 10 min
-  },
-  arbitrum: {
-    name: 'Arbitrum',
-    symbol: 'ARB',
-    asset: 'arbitrum.eth',
-    buffer: 300_000, // 5 min
   },
   solana: {
     name: 'Solana',
