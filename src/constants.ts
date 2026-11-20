@@ -1,4 +1,11 @@
-import { Asset, IntentType, Network, Provider, QuoteStatus } from './enums'
+import {
+  Asset,
+  IntentType,
+  Network,
+  Provider,
+  QuoteStatus,
+  TransactionStatus,
+} from './enums'
 
 import type { AssetMeta, NetworkMeta } from './types'
 
@@ -111,3 +118,4 @@ export const NETWORKS = Object.keys(Network) as [Network]
 export const ASSETS = Object.keys(Asset) as [Asset]
 export const INTENT_TYPES = Object.keys(IntentType) as [IntentType]
 export const QUOTE_STATUSES = Object.keys(QuoteStatus) as [QuoteStatus]
+export const TX_STATUSES = Object.keys(TransactionStatus) as [TransactionStatus]

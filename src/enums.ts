@@ -41,6 +41,7 @@ export const QuoteStatus = {
 } as const
 
 export const TransactionStatus = {
+  unknown: 'unknown',
   success: 'success',
   refunded: 'refunded',
   failed: 'failed',
