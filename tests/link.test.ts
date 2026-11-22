@@ -10,14 +10,14 @@ const intent = createIntent({
 
 describe('Utils', () => {
   test('Build query string without url', () => {
-    const result = toLink(intent, null, null)
+    const result = toLink({ intent, extra: null, url: null })
 
     expect(result.startsWith('?')).toBe(true)
     expect(Object.fromEntries(new URLSearchParams(result))).toEqual(intent)
   })
 
   test('Build URL with query params', () => {
-    const result = new URL(toLink(intent, null, 'https://example.com'))
+    const result = new URL(toLink({ intent, extra: null, url: 'https://example.com' }))
 
     expect(result.origin).toBe('https://example.com')
     expect(result.searchParams.get('id')).toBe(intent.id)
@@ -28,7 +28,7 @@ describe('Utils', () => {
 
   test('Preserve existing query params', () => {
     const result = new URL(
-      toLink(intent, null, 'https://example.com?theme=dark')
+      toLink({ intent, extra: null, url: 'https://example.com?theme=dark' })
     )
 
     expect(result.searchParams.get('theme')).toBe('dark')
@@ -37,22 +37,34 @@ describe('Utils', () => {
 
   test('Override existing query params', () => {
     const result = new URL(
-      toLink(intent, null, 'https://example.com?amount=100')
+      toLink({ intent, extra: null, url: 'https://example.com?amount=100' })
     )
 
     expect(result.searchParams.get('amount')).toBe(intent.amount)
   })
 
   test('Include additional params', () => {
-    const result = toLink(intent, { method: 'solana.sol' })
+    const result = toLink({ intent, extra: { method: 'solana.sol' } })
 
     expect(new URLSearchParams(result).get('method')).toBe('solana.sol')
   })
 
   test('Exclude undefined params', () => {
-    const result = toLink(intent, { method: undefined, label: '' })
+    const result = toLink({
+      intent,
+      extra: { method: undefined, displayLabel: '' },
+    })
 
     expect(new URLSearchParams(result).has('method')).toBe(false)
-    expect(new URLSearchParams(result).has('label')).toBe(false)
+    expect(new URLSearchParams(result).has('displayLabel')).toBe(false)
+  })
+
+  test('Resolve relative URL paths', () => {
+    const result = toLink({ intent, url: '/pay' })
+
+    expect(result.startsWith('/pay?')).toBe(true)
+    expect(new URLSearchParams(result.slice(result.indexOf('?'))).get('id')).toBe(
+      intent.id
+    )
   })
 })

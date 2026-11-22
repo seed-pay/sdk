@@ -4,12 +4,19 @@ import type { Extra, Intent } from './types'
 
 const PAY_URL = `${SEEDPAY_URL}/pay`
 
-export const toLink = (
-  intent: Intent,
-  extra: Extra | null = {},
-  url: string | null = PAY_URL
-): string => {
-  const base = url === null ? null : new URL(url)
+export type LinkParams = {
+  intent: Intent
+  extra?: Extra | null
+  url?: string | null
+}
+
+export const toLink = ({
+  intent,
+  extra = {},
+  url = PAY_URL,
+}: LinkParams): string => {
+  const isRelative = url !== null && url.startsWith('/')
+  const base = url === null ? null : new URL(url, SEEDPAY_URL)
 
   const params = new URLSearchParams(
     Object.entries({ ...intent, ...extra }).filter(
@@ -21,5 +28,5 @@ export const toLink = (
 
   params.forEach((value, key) => base.searchParams.set(key, value))
 
-  return base.toString()
+  return isRelative ? `${base.pathname}${base.search}` : base.toString()
 }

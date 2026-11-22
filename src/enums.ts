@@ -33,9 +33,12 @@ export const IntentType = {
 
 export const QuoteStatus = {
   waiting: 'waiting',
-  incomplete: 'incomplete',
+  partial: 'partial',
   processing: 'processing',
   success: 'success',
+  expired: 'expired',
+  underpaid: 'underpaid',
+  refunding: 'refunding',
   refunded: 'refunded',
   failed: 'failed',
 } as const

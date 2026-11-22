@@ -70,6 +70,7 @@ const quote: Quote = {
   depositedAmount: '2000',
   createdAt: '2026-11-08T15:25:00.000Z',
   deadlineAt: '2026-11-08T15:25:00.000Z',
+  expiresAt: '2026-11-08T15:25:00.000Z',
   updatedAt: '2026-11-08T15:25:00.000Z',
   signature: 'signature',
   status: QuoteStatus.waiting,

@@ -202,6 +202,7 @@ export const quoteSchema = v.pipe(
     createdAt: v.pipe(v.string(), v.isoTimestamp()),
     updatedAt: v.pipe(v.string(), v.isoTimestamp()),
     deadlineAt: v.pipe(v.string(), v.isoTimestamp()),
+    expiresAt: v.pipe(v.string(), v.isoTimestamp()),
     status: quoteStatusSchema,
   })
 )
