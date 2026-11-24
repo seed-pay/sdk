@@ -17,7 +17,7 @@ export const toLink = ({
   extra = null,
   url = PAY_URL,
 }: LinkParams): string => {
-  const validatedExtra = v.parse(extraSchema, extra)
+  const validatedExtra = v.parse(extraSchema, extra ?? {})
   const isRelative = url !== null && url.startsWith('/')
   const base = url === null ? null : new URL(url, SEEDPAY_URL)
 
