@@ -1,6 +1,8 @@
 import { SEEDPAY_URL } from './constants'
 
-import type { Extra, Intent } from './types'
+import { extraSchema, type Extra, type Intent } from './types'
+
+import * as v from 'valibot'
 
 const PAY_URL = `${SEEDPAY_URL}/pay`
 
@@ -12,14 +14,15 @@ export type LinkParams = {
 
 export const toLink = ({
   intent,
-  extra = {},
+  extra = null,
   url = PAY_URL,
 }: LinkParams): string => {
+  const validatedExtra = v.parse(extraSchema, extra)
   const isRelative = url !== null && url.startsWith('/')
   const base = url === null ? null : new URL(url, SEEDPAY_URL)
 
   const params = new URLSearchParams(
-    Object.entries({ ...intent, ...extra }).filter(
+    Object.entries({ ...intent, ...validatedExtra }).filter(
       (entry): entry is [string, string] => entry[1] != null && entry[1] !== ''
     )
   )
