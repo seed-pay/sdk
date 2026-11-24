@@ -209,17 +209,15 @@ export const quoteSchema = v.pipe(
 
 // link
 
-export const extraSchema = v.nullable(
-  v.object(
-    {
-      displayAmount: v.optional(displayAmountSchema),
-      displaySymbol: v.optional(v.string()),
-      displayLabel: v.optional(v.string()),
-      method: v.optional(assetSchema),
-      return: v.optional(urlSchema),
-    },
-    ErrorCode.INVALID_PARAMS
-  )
+export const extraSchema = v.object(
+  {
+    displayAmount: v.optional(displayAmountSchema),
+    displaySymbol: v.optional(v.string()),
+    displayLabel: v.optional(v.string()),
+    method: v.optional(assetSchema),
+    return: v.optional(urlSchema),
+  },
+  ErrorCode.INVALID_PARAMS
 )
 
 // types
